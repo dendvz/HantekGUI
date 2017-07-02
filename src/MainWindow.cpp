@@ -82,51 +82,63 @@ MainWindow::MainWindow(QWidget *parent)
   mainLayout->setContentsMargins(QMargins());
   mainLayout->addWidget(chartView, 1);
 
-// ##########################################################
-//  QPushButton *btnAcquire = new QPushButton("Acquire");
-//  QObject::connect(btnAcquire, SIGNAL(clicked()), this, SLOT(DoAcquire()));
-//  mainLayout->addWidget(btnAcquire);
-// ####################################################
+  QFrame * controlPanel = new QFrame;
+  mainLayout->addWidget(controlPanel);
 
-  QVBoxLayout * controlPanelLayout = new QVBoxLayout;
+  QVBoxLayout * controlPanelLayout = new QVBoxLayout(controlPanel);
+//  controlPanelLayout->setContentsMargins(QMargins());
 
-  controlPanelLayout->addWidget(createHorizontalControl(), Qt::AlignTop);
-  controlPanelLayout->addWidget(createTriggerControl(), Qt::AlignTop);
+  controlPanelLayout->addWidget(createTimeBaseControl(), 1, Qt::AlignTop);
+  controlPanelLayout->addWidget(createTriggerControl());
   for (int trace = 0; trace < 2; ++trace)
   {
-     controlPanelLayout->addWidget(createChannelControl(trace), Qt::AlignTop);
+     controlPanelLayout->addWidget(createChannelControl(trace));
   }
 
-  mainLayout->addLayout(controlPanelLayout);
+//  mainLayout->addLayout(controlPanelLayout);
 
   setLayout(mainLayout);
-//  mainLayout->addWidget(&controlPanel);
 }
 
 MainWindow::~MainWindow()
 {
 }
 
-QGroupBox * MainWindow::createHorizontalControl()
+QGroupBox * MainWindow::createTimeBaseControl()
 {
-  QGroupBox *groupBox = new QGroupBox(tr("Horizontal"));
+  QGroupBox *groupBox = new QGroupBox(tr("Timebase"));
 
   timeBaseLabel_ = new QLabel;
-  timeBaseLabel_->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+  timeBaseLabel_->setAlignment(Qt::AlignHCenter);
+  timeBaseLabel_->setFont(QFont("Courier", 16, QFont::Bold));
 
   timeBaseDial_ = new QDial;
   timeBaseDial_->setWrapping(false);
   timeBaseDial_->setNotchesVisible(true);
-  timeBaseDial_->setMinimum(int(HantekDataSource::TimeBase::TB_MIN));
-  timeBaseDial_->setMaximum(int(HantekDataSource::TimeBase::TB_MAX));
+  timeBaseDial_->setMinimum(int(HantekDataSource::TimeBase_t::TB_MIN));
+  timeBaseDial_->setMaximum(int(HantekDataSource::TimeBase_t::TB_MAX));
+  timeBaseDial_->setTracking(true);
 
-  QObject::connect(timeBaseDial_, SIGNAL(sliderMoved(int)), this, SLOT(updateTimeBase(int)));
-  updateTimeBase(int(HantekDataSource::TimeBase::TB_MIN));
+  QObject::connect(timeBaseDial_, SIGNAL(valueChanged(int)), this, SLOT(updateTimeBase(int)));
+  updateTimeBase(int(HantekDataSource::TimeBase_t::TB_MIN));
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->addWidget(timeBaseLabel_);
-  vbox->addWidget(timeBaseDial_);
-  groupBox->setLayout(vbox);
+  QPushButton *btnDec = new QPushButton("-");
+  btnDec->setMaximumWidth(40);
+  QObject::connect(btnDec, SIGNAL(clicked()), this, SLOT(decTimeBase()));
+
+  QPushButton *btnInc = new QPushButton("+");
+  btnInc->setMaximumWidth(40);
+  QObject::connect(btnInc, SIGNAL(clicked()), this, SLOT(incTimeBase()));
+
+  // Layout
+  QGridLayout * grid = new QGridLayout;
+  grid->setContentsMargins(QMargins());
+  grid->addWidget(timeBaseLabel_, 0, 0, 1, 2);
+  grid->addWidget(btnDec, 1, 0, Qt::AlignCenter);
+  grid->addWidget(btnInc, 1, 1, Qt::AlignCenter);
+  grid->addWidget(timeBaseDial_, 2, 0, 1, 2);
+  grid->setRowStretch(2, 1);
+  groupBox->setLayout(grid);
 
   return groupBox;
 }
@@ -134,10 +146,12 @@ QGroupBox * MainWindow::createHorizontalControl()
 QGroupBox * MainWindow::createTriggerControl()
 {
   QGroupBox *groupBox = new QGroupBox(tr("Trigger"));
-  QPushButton *btnDummy = new QPushButton("Dummy");
+
+  QPushButton *btnAcquire = new QPushButton("Acquire");
+  QObject::connect(btnAcquire, SIGNAL(clicked()), this, SLOT(doAcquire()));
 
   QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->addWidget(btnDummy);
+  vbox->addWidget(btnAcquire);
   groupBox->setLayout(vbox);
 
   return groupBox;
@@ -159,11 +173,30 @@ QGroupBox * MainWindow::createChannelControl(int ch)
 
 void MainWindow::doAcquire()
 {
-  device_->setTriggerMode(HantekDataSource::TriggerMode::SINGLE);
+  device_->setTriggerMode(HantekDataSource::TriggerMode_t::SINGLE);
   device_->Acquire();
 }
 
 void MainWindow::updateTimeBase(int tb)
 {
-  timeBaseLabel_->setText(HantekDataSource::timeBaseToString(HantekDataSource::TimeBase(tb)));
+  timeBaseLabel_->setText(HantekDataSource::timeBaseToString(HantekDataSource::TimeBase_t(tb)));
 }
+
+void MainWindow::incTimeBase()
+{
+  int tb = timeBaseDial_->value();
+  if (tb < int(HantekDataSource::TimeBase_t::TB_MAX))
+  {
+    timeBaseDial_->setValue(tb + 1);
+  }
+}
+
+void MainWindow::decTimeBase()
+{
+  int tb = timeBaseDial_->value();
+  if (tb > int(HantekDataSource::TimeBase_t::TB_MIN))
+  {
+    timeBaseDial_->setValue(tb - 1);
+  }
+}
+

@@ -31,6 +31,8 @@ public:
 public slots:
   void doAcquire();
   void updateTimeBase(int tb);
+  void incTimeBase();
+  void decTimeBase();
 
 private:
   QChart * chart_;
@@ -41,7 +43,7 @@ private:
   QLabel * timeBaseLabel_;
   QDial  * timeBaseDial_;
 
-  QGroupBox * createHorizontalControl();
+  QGroupBox * createTimeBaseControl();
   QGroupBox * createTriggerControl();
   QGroupBox * createChannelControl(int ch);
 };

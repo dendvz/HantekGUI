@@ -27,9 +27,9 @@ class HantekDataSource : public QIODevice
 public:
   using Series = std::vector<QLineSeries *>;
 
-  enum class TimeBase
+  enum class TimeBase_t
   {
-    TB_100ns, TB_MIN = TimeBase::TB_100ns,
+    TB_100ns, TB_MIN = TimeBase_t::TB_100ns,
     TB_200ns,
     TB_500ns,
     TB_1us,
@@ -43,10 +43,10 @@ public:
     TB_500us,
     TB_1ms,
     TB_2ms,
-    TB_5ms,   TB_MAX = TimeBase::TB_5ms
+    TB_5ms,   TB_MAX = TimeBase_t::TB_5ms
   };
 
-  enum class TriggerMode
+  enum class TriggerMode_t
   {
     AUTO,
     NORMAL,
@@ -59,10 +59,10 @@ public:
 
   int getChannelCount() const { return 2; }
 
-  void setTriggerMode(TriggerMode mode) { triggerMode_ = mode; }
+  void setTriggerMode(TriggerMode_t mode) { triggerMode_ = mode; }
 
-  static qreal   timeBaseToValue(TimeBase timeBase);
-  static QString timeBaseToString(TimeBase timeBase);
+  static qreal   timeBaseToValue(TimeBase_t timeBase);
+  static QString timeBaseToString(TimeBase_t timeBase);
 
   void Acquire();
 protected:
@@ -73,7 +73,7 @@ private:
   Series series_;
   QAudioInput * m_audioInput;
 
-  TriggerMode triggerMode_;
+  TriggerMode_t triggerMode_;
 };
 
 #endif // HANTEK_DATA_SOURCE_H

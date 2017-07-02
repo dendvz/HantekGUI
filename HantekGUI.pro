@@ -12,7 +12,7 @@ SOURCES += \
     src/HantekDataSource.cpp \
     src/MainWindow.cpp
 
-target.path = $$[QT_INSTALL_EXAMPLES]/charts/audio
-INSTALLS += target
+# target.path = $$[QT_INSTALL_EXAMPLES]/charts/audio
+# INSTALLS += target
 
 FORMS +=

@@ -18,7 +18,7 @@
 HantekDataSource::HantekDataSource(Series series, QObject * parent) :
     QIODevice(parent),
     series_(series),
-    triggerMode_(TriggerMode::AUTO)
+    triggerMode_(TriggerMode_t::AUTO)
 {
   QAudioFormat formatAudio;
   formatAudio.setSampleRate(8000);
@@ -50,7 +50,7 @@ qint64 HantekDataSource::readData(char * data, qint64 maxSize)
 
 qint64 HantekDataSource::writeData(const char * data, qint64 maxSize)
 {
-  if (triggerMode_ == TriggerMode::SINGLE)
+  if (triggerMode_ == TriggerMode_t::SINGLE)
   {
     return maxSize;
   }
@@ -131,55 +131,55 @@ H_SCALE = [
 ]
   */
 
-qreal HantekDataSource::timeBaseToValue(TimeBase timeBase)
+qreal HantekDataSource::timeBaseToValue(TimeBase_t timeBase)
 {
   switch (timeBase)
   {
-  case TimeBase::TB_100ns: return 100e-9;
-  case TimeBase::TB_200ns: return 200e-9;
-  case TimeBase::TB_500ns: return 500e-9;
-  case TimeBase::TB_1us:   return   1e-6;
-  case TimeBase::TB_2us:   return   2e-6;
-  case TimeBase::TB_5us:   return   5e-6;
-  case TimeBase::TB_10us:  return  10e-6;
-  case TimeBase::TB_20us:  return  20e-6;
-  case TimeBase::TB_50us:  return  50e-6;
-  case TimeBase::TB_100us: return 100e-6;
-  case TimeBase::TB_200us: return 200e-6;
-  case TimeBase::TB_500us: return 500e-6;
-  case TimeBase::TB_1ms:   return   1e-3;
-  case TimeBase::TB_2ms:   return   2e-3;
-  case TimeBase::TB_5ms:   return   5e-3;
+  case TimeBase_t::TB_100ns: return 100e-9;
+  case TimeBase_t::TB_200ns: return 200e-9;
+  case TimeBase_t::TB_500ns: return 500e-9;
+  case TimeBase_t::TB_1us:   return   1e-6;
+  case TimeBase_t::TB_2us:   return   2e-6;
+  case TimeBase_t::TB_5us:   return   5e-6;
+  case TimeBase_t::TB_10us:  return  10e-6;
+  case TimeBase_t::TB_20us:  return  20e-6;
+  case TimeBase_t::TB_50us:  return  50e-6;
+  case TimeBase_t::TB_100us: return 100e-6;
+  case TimeBase_t::TB_200us: return 200e-6;
+  case TimeBase_t::TB_500us: return 500e-6;
+  case TimeBase_t::TB_1ms:   return   1e-3;
+  case TimeBase_t::TB_2ms:   return   2e-3;
+  case TimeBase_t::TB_5ms:   return   5e-3;
   }
   return 0;
 }
 
-QString HantekDataSource::timeBaseToString(TimeBase timeBase)
+QString HantekDataSource::timeBaseToString(TimeBase_t timeBase)
 {
   QString result;
   qreal value = timeBaseToValue(timeBase);
 
   switch (timeBase)
   {
-  case TimeBase::TB_100ns:
-  case TimeBase::TB_200ns:
-  case TimeBase::TB_500ns:
+  case TimeBase_t::TB_100ns:
+  case TimeBase_t::TB_200ns:
+  case TimeBase_t::TB_500ns:
     QTextStream(&result) << (value * 1e9) << " ns";
     break;
-  case TimeBase::TB_1us:
-  case TimeBase::TB_2us:
-  case TimeBase::TB_5us:
-  case TimeBase::TB_10us:
-  case TimeBase::TB_20us:
-  case TimeBase::TB_50us:
-  case TimeBase::TB_100us:
-  case TimeBase::TB_200us:
-  case TimeBase::TB_500us:
+  case TimeBase_t::TB_1us:
+  case TimeBase_t::TB_2us:
+  case TimeBase_t::TB_5us:
+  case TimeBase_t::TB_10us:
+  case TimeBase_t::TB_20us:
+  case TimeBase_t::TB_50us:
+  case TimeBase_t::TB_100us:
+  case TimeBase_t::TB_200us:
+  case TimeBase_t::TB_500us:
     QTextStream(&result) << (value * 1e6) << " us";
     break;
-  case TimeBase::TB_1ms:
-  case TimeBase::TB_2ms:
-  case TimeBase::TB_5ms:
+  case TimeBase_t::TB_1ms:
+  case TimeBase_t::TB_2ms:
+  case TimeBase_t::TB_5ms:
     QTextStream(&result) << (value * 1e3) << " ms";
     break;
   }
