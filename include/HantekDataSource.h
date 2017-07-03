@@ -5,8 +5,8 @@
 #ifndef HANTEK_DATA_SOURCE_H
 #define HANTEK_DATA_SOURCE_H
 
-#include <QtCore/QIODevice>
-#include <QtCharts/QChartGlobal>
+#include <QObject>
+#include <QChartGlobal>
 
 #include <vector>
 
@@ -16,11 +16,7 @@ QT_CHARTS_END_NAMESPACE
 
 QT_CHARTS_USE_NAMESPACE
 
-QT_BEGIN_NAMESPACE
-class QAudioInput;
-QT_END_NAMESPACE
-
-class HantekDataSource : public QIODevice
+class HantekDataSource : public QObject
 {
   Q_OBJECT
 
@@ -54,7 +50,7 @@ public:
     SOFTWARE
   };
 
-  explicit HantekDataSource(Series series, QObject * parent = 0);
+  explicit HantekDataSource(Series series, QObject * parent = nullptr);
   ~HantekDataSource();
 
   int getChannelCount() const { return 2; }
@@ -65,14 +61,12 @@ public:
   static QString timeBaseToString(TimeBase_t timeBase);
 
   void Acquire();
-protected:
-  qint64 readData(char * data, qint64 maxSize);
-  qint64 writeData(const char * data, qint64 maxSize);
+  void setTimeBase(TimeBase_t timeBase) { timeBase_ = timeBase; }
 
 private:
   Series series_;
-  QAudioInput * m_audioInput;
 
+  TimeBase_t    timeBase_;
   TriggerMode_t triggerMode_;
 };
 

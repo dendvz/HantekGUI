@@ -11,88 +11,28 @@
 
 #include <QTextStream>
 
-// Temporary
-#include <QtMultimedia/QAudioDeviceInfo>
-#include <QtMultimedia/QAudioInput>
-
-HantekDataSource::HantekDataSource(Series series, QObject * parent) :
-    QIODevice(parent),
+HantekDataSource::HantekDataSource(Series series, QObject * parent)
+  : QObject(parent),
     series_(series),
+    timeBase_(TimeBase_t::TB_MIN),
     triggerMode_(TriggerMode_t::AUTO)
 {
-  QAudioFormat formatAudio;
-  formatAudio.setSampleRate(8000);
-  formatAudio.setChannelCount(1);
-  formatAudio.setSampleSize(8);
-  formatAudio.setCodec("audio/pcm");
-  formatAudio.setByteOrder(QAudioFormat::LittleEndian);
-  formatAudio.setSampleType(QAudioFormat::UnSignedInt);
-
-  QAudioDeviceInfo inputDevices = QAudioDeviceInfo::defaultInputDevice();
-  m_audioInput = new QAudioInput(inputDevices, formatAudio, this);
-
-  m_audioInput->start(this);
-  open(QIODevice::WriteOnly);
 }
 
 HantekDataSource::~HantekDataSource()
 {
-  close();
-  m_audioInput->stop();
-}
-
-qint64 HantekDataSource::readData(char * data, qint64 maxSize)
-{
-  Q_UNUSED(data)
-  Q_UNUSED(maxSize)
-  return -1;
-}
-
-qint64 HantekDataSource::writeData(const char * data, qint64 maxSize)
-{
-  if (triggerMode_ == TriggerMode_t::SINGLE)
-  {
-    return maxSize;
-  }
-  qint64 range = 2000;
-
-  qreal bias[] = {0.5, -0.5};
-
-  for (int trace = 0; trace < 2; ++trace)
-  {
-    QVector<QPointF> oldPoints = series_[trace]->pointsVector();
-    QVector<QPointF> points;
-    int resolution = 4;
-
-    if (oldPoints.count() < range)
-    {
-      points = series_[trace]->pointsVector();
-    }
-    else
-    {
-      for (int i = maxSize / resolution; i < oldPoints.count(); i++)
-      {
-        points.append(QPointF(i - maxSize / resolution, oldPoints.at(i).y()));
-      }
-    }
-
-    qint64 size = points.count();
-    for (int k = 0; k < maxSize / resolution; k++)
-    {
-      points.append(
-        QPointF(k + size, bias[trace] + ((quint8)data[resolution * k] - 128) / 128.0));
-    }
-
-    series_[trace]->replace(points);
-  }
-  return maxSize;
 }
 
 void HantekDataSource::Acquire()
 {
-  qint64 range = 2000;
+  int range = 2000;
 
   qreal bias[] = {0.5, -0.5};
+
+  qreal calibratorPeriod = 1e-3; // 1kHz
+
+  // samples, assuming 10 divs along X axis
+  int period = int(floor(calibratorPeriod * range / (10 * timeBaseToValue(timeBase_))));
 
   for (int trace = 0; trace < 2; ++trace)
   {
@@ -101,7 +41,7 @@ void HantekDataSource::Acquire()
     for (int i = 0; i < range; ++i)
     {
       qreal v = bias[trace]
-              + (0.8 * ((i / 100) % 2) - 0.4)
+              + (0.4 * ((2 * i / period) % 2))
               + (0.05 * (rand() / qreal(RAND_MAX) - 0.5));
       points.append(QPointF(i, v));
     }
