@@ -6,6 +6,7 @@
 #include "Helpers.h"
 
 #include "HantekDataSource.h"
+#include "TimeBaseControl.h"
 
 #include <QLineSeries>
 #include <QChart>
@@ -94,7 +95,12 @@ MainWindow::MainWindow(QWidget *parent)
 
   QVBoxLayout * controlPanelLayout = new QVBoxLayout(controlPanel);
 
-  controlPanelLayout->addWidget(createTimeBaseControl(), 1, Qt::AlignTop);
+  timeBaseControl_ = new TimeBaseControl(tr("Timebase"), device_, this);
+
+  // TODO: Load from settings
+  timeBaseControl_->setTimeBase(int(HantekDataSource::TimeBase_t::TB_200us));
+
+  controlPanelLayout->addWidget(timeBaseControl_, 1, Qt::AlignTop);
   controlPanelLayout->addWidget(createTriggerControl());
   for (int trace = 0; trace < 2; ++trace)
   {
@@ -106,56 +112,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-}
-
-QGroupBox * MainWindow::createTimeBaseControl()
-{
-  QGroupBox *groupBox = new QGroupBox(tr("Timebase"));
-
-  timeBaseLabel_ = new QLabel;
-  timeBaseLabel_->setAlignment(Qt::AlignHCenter);
-  timeBaseLabel_->setFont(QFont("Courier", 16, QFont::Bold));
-
-  timeBaseDial_ = new QDial;
-  timeBaseDial_->setWrapping(false);
-  timeBaseDial_->setNotchesVisible(true);
-  timeBaseDial_->setMinimum(int(HantekDataSource::TimeBase_t::TB_MIN));
-  timeBaseDial_->setMaximum(int(HantekDataSource::TimeBase_t::TB_MAX));
-  timeBaseDial_->setInvertedAppearance(true);
-  timeBaseDial_->setInvertedControls(true);
-  timeBaseDial_->setTracking(true);
-
-  QObject::connect(timeBaseDial_, SIGNAL(valueChanged(int)), this, SLOT(updateTimeBase(int)));
-
-  // TODO: Load from settings
-  timeBaseDial_->setValue(int(HantekDataSource::TimeBase_t::TB_200us));
-
-  QCommonStyle style;
-
-  QPushButton *btnInc = new QPushButton;
-  btnInc->setIcon(style.standardIcon(QStyle::SP_ArrowLeft));
-  btnInc->setIconSize(QSize(24, 24));
-  btnInc->setAutoRepeat(true);
-  QObject::connect(btnInc, SIGNAL(clicked()), this, SLOT(incTimeBase()));
-
-  QPushButton *btnDec = new QPushButton;
-  btnDec->setIcon(style.standardIcon(QStyle::SP_ArrowRight));
-  btnDec->setIconSize(QSize(24, 24));
-  btnDec->setAutoRepeat(true);
-  QObject::connect(btnDec, SIGNAL(clicked()), this, SLOT(decTimeBase()));
-
-  // Layout
-  QGridLayout * grid = new QGridLayout;
-  grid->setContentsMargins(QMargins());
-  grid->addWidget(timeBaseLabel_, 0, 0, 1, 2, Qt::AlignHCenter | Qt::AlignBottom);
-  grid->addWidget(btnInc, 1, 0, Qt::AlignCenter);
-  grid->addWidget(btnDec, 1, 1, Qt::AlignCenter);
-  grid->addWidget(timeBaseDial_, 2, 0, 1, 2);
-  grid->setRowStretch(2, 1);
-  grid->setRowMinimumHeight(0, 32);
-  groupBox->setLayout(grid);
-
-  return groupBox;
 }
 
 QGroupBox * MainWindow::createTriggerControl()
@@ -191,29 +147,3 @@ void MainWindow::doAcquire()
   device_->setTriggerMode(HantekDataSource::TriggerMode_t::SINGLE);
   device_->Acquire();
 }
-
-void MainWindow::updateTimeBase(int tb)
-{
-  HantekDataSource::TimeBase_t value = HantekDataSource::TimeBase_t(tb);
-  device_->setTimeBase(value);
-  timeBaseLabel_->setText(HantekDataSource::timeBaseToString(value));
-}
-
-void MainWindow::incTimeBase()
-{
-  int tb = timeBaseDial_->value();
-  if (tb < int(HantekDataSource::TimeBase_t::TB_MAX))
-  {
-    timeBaseDial_->setValue(tb + 1);
-  }
-}
-
-void MainWindow::decTimeBase()
-{
-  int tb = timeBaseDial_->value();
-  if (tb > int(HantekDataSource::TimeBase_t::TB_MIN))
-  {
-    timeBaseDial_->setValue(tb - 1);
-  }
-}
-

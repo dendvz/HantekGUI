@@ -16,9 +16,8 @@ QT_CHARTS_END_NAMESPACE
 QT_CHARTS_USE_NAMESPACE
 
 class HantekDataSource;
+class TimeBaseControl;
 class QGroupBox;
-class QLabel;
-class QDial;
 
 class MainWindow : public QWidget
 {
@@ -30,20 +29,13 @@ public:
 
 public slots:
   void doAcquire();
-  void updateTimeBase(int tb);
-  void incTimeBase();
-  void decTimeBase();
 
 private:
   QChart * chart_;
   std::vector<QLineSeries *> traces_;
   HantekDataSource * device_;
+  TimeBaseControl  * timeBaseControl_;
 
-  // Timebase control (Horizontal)
-  QLabel * timeBaseLabel_;
-  QDial  * timeBaseDial_;
-
-  QGroupBox * createTimeBaseControl();
   QGroupBox * createTriggerControl();
   QGroupBox * createChannelControl(int ch);
 };
