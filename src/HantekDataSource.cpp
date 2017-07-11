@@ -17,6 +17,7 @@ HantekDataSource::HantekDataSource(Series series, QObject * parent)
     timeBase_(TimeBase_t::TB_MIN),
     triggerMode_(TriggerMode_t::AUTO)
 {
+  vScale_.reserve(getChannelCount());
 }
 
 HantekDataSource::~HantekDataSource()
@@ -91,7 +92,7 @@ qreal HantekDataSource::timeBaseToValue(TimeBase_t timeBase)
   case TimeBase_t::TB_2ms:   return   2e-3;
   case TimeBase_t::TB_5ms:   return   5e-3;
   }
-  return 0;
+  return 0.0;
 }
 
 QString HantekDataSource::timeBaseToString(TimeBase_t timeBase)
@@ -124,4 +125,36 @@ QString HantekDataSource::timeBaseToString(TimeBase_t timeBase)
     break;
   }
   return result;
+}
+
+qreal HantekDataSource::vScaleToValue(VScale_t vScale)
+{
+  switch (vScale)
+  {
+  case VScale_t::VS_100mV:  return 0.1;
+  case VScale_t::VS_200mV:  return 0.2;
+  case VScale_t::VS_500mV:  return 0.5;
+  case VScale_t::VS_1V:     return 1.0;
+  case VScale_t::VS_2V:     return 2.0;
+  case VScale_t::VS_5V:     return 5.0;
+  }
+  return 0.0;
+}
+
+QString HantekDataSource::vScaleToString(VScale_t vScale)
+{
+  qreal value = vScaleToValue(vScale);
+
+  switch (vScale)
+  {
+  case VScale_t::VS_100mV:
+  case VScale_t::VS_200mV:
+  case VScale_t::VS_500mV:
+    return QString("%1mV").arg(value * 1000);
+  case VScale_t::VS_1V:
+  case VScale_t::VS_2V:
+  case VScale_t::VS_5V:
+    return QString("%1V").arg(value);
+  }
+  return QString();
 }

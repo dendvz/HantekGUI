@@ -10,7 +10,7 @@
 #include <QCommonStyle>
 #include <QGridLayout>
 
-TimeBaseControl::TimeBaseControl(QString title, HantekDataSource * device, QWidget *parent)
+TimeBaseControl::TimeBaseControl(QWidget * parent, QString title, HantekDataSource * device)
   : QGroupBox(title, parent),
     device_(device)
 {
@@ -23,8 +23,6 @@ TimeBaseControl::TimeBaseControl(QString title, HantekDataSource * device, QWidg
   timeBaseDial_->setNotchesVisible(true);
   timeBaseDial_->setMinimum(int(HantekDataSource::TimeBase_t::TB_MIN));
   timeBaseDial_->setMaximum(int(HantekDataSource::TimeBase_t::TB_MAX));
-  timeBaseDial_->setInvertedAppearance(true);
-  timeBaseDial_->setInvertedControls(true);
   timeBaseDial_->setTracking(true);
 
   QObject::connect(timeBaseDial_, SIGNAL(valueChanged(int)), this, SLOT(setTimeBase(int)));

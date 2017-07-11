@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include "MainWindow.h"
+#include "ScopeView.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,8 +12,8 @@ int main(int argc, char *argv[])
 
   app.setWheelScrollLines(1);
 
-  MainWindow mainWindow;
-  mainWindow.show();
+  MainWindow w;
+  w.show();
     
   return app.exec();
 }

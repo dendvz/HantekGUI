@@ -7,11 +7,10 @@
 
 #include "HantekDataSource.h"
 #include "TimeBaseControl.h"
+#include "ChannelControl.h"
+#include "ScopeView.h"
 
 #include <QLineSeries>
-#include <QChart>
-#include <QChartView>
-#include <QValueAxis>
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -26,55 +25,14 @@
 
 QT_CHARTS_USE_NAMESPACE
 
-class CustomAxis : public QValueAxis
-{
-public:
-  CustomAxis(qreal min, qreal max, int divisions)
-  {
-    setRange(min, max);
-    setLabelsVisible(false);
-    setTickCount(divisions + 1);
-    setMinorTickCount(4);
-    setMinorGridLinePen(QPen(QBrush(QColor(255, 255, 255, 31)), 0, Qt::DotLine));
-  }
-};
-
 MainWindow::MainWindow(QWidget *parent)
   : QWidget(parent),
-    chart_(new QChart),
     device_(nullptr)
 {
-  QChartView *chartView = new QChartView;
-  chartView->setChart(chart_);
+  ScopeView* chartView = new ScopeView;
   chartView->setMinimumSize(800, 600);
 
-  chart_->setBackgroundBrush(QColor(0, 0, 0, 255));
-  chart_->setMargins(QMargins());
-
-  chart_->addAxis(new CustomAxis(0, 2000, 10), Qt::AlignBottom);
-  chart_->addAxis(new CustomAxis(0, 2000, 10), Qt::AlignTop);
-  chart_->addAxis(new CustomAxis(-1, 1, 8),    Qt::AlignLeft);
-  chart_->addAxis(new CustomAxis(-1, 1, 8),    Qt::AlignRight);
-
-  for (int trace = 0; trace < 2; ++trace)
-  {
-    traces_.push_back(new QLineSeries);
-    if (trace == 0)
-    {
-      traces_[trace]->setPen(QColor(255, 255, 0, 255));
-    }
-    else
-    {
-      traces_[trace]->setPen(QColor(0, 255, 255, 255));
-    }
-    chart_->addSeries(traces_[trace]);
-    traces_[trace]->attachAxis(chart_->axisX());
-    traces_[trace]->attachAxis(chart_->axisY());
-  }
-
-  chart_->legend()->hide();
-
-  device_ = new HantekDataSource(traces_, this);
+  device_ = new HantekDataSource(chartView->getTraces(), this);
 
   QTimer * timer = new QTimer(this);
   QObject::connect(timer, SIGNAL(timeout()), this, SLOT(doAcquire()));
@@ -95,16 +53,20 @@ MainWindow::MainWindow(QWidget *parent)
 
   QVBoxLayout * controlPanelLayout = new QVBoxLayout(controlPanel);
 
-  timeBaseControl_ = new TimeBaseControl(tr("Timebase"), device_, this);
+  timeBaseControl_ = new TimeBaseControl(this, tr("Timebase"), device_);
 
   // TODO: Load from settings
   timeBaseControl_->setTimeBase(int(HantekDataSource::TimeBase_t::TB_200us));
 
   controlPanelLayout->addWidget(timeBaseControl_, 1, Qt::AlignTop);
   controlPanelLayout->addWidget(createTriggerControl());
-  for (int trace = 0; trace < 2; ++trace)
+  for (int trace = 0; trace < device_->getChannelCount(); ++trace)
   {
-     controlPanelLayout->addWidget(createChannelControl(trace));
+    ChannelControl * ch = new ChannelControl(this, trace, device_);
+    // TODO: Load from settings
+    ch->setScale(int(HantekDataSource::VScale_t::VS_500mV));
+    controlPanelLayout->addWidget(ch);
+    channelControl_.push_back(ch);
   }
 
   setLayout(mainLayout);
@@ -123,20 +85,6 @@ QGroupBox * MainWindow::createTriggerControl()
 
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->addWidget(btnAcquire);
-  groupBox->setLayout(vbox);
-
-  return groupBox;
-}
-
-QGroupBox * MainWindow::createChannelControl(int ch)
-{
-  QString title;
-  QTextStream(&title) << "Ch" << (ch + 1);
-  QGroupBox *groupBox = new QGroupBox(title);
-  QPushButton *btnDummy = new QPushButton("Dummy");
-
-  QVBoxLayout *vbox = new QVBoxLayout;
-  vbox->addWidget(btnDummy);
   groupBox->setLayout(vbox);
 
   return groupBox;

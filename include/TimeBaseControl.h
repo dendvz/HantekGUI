@@ -11,7 +11,7 @@ class TimeBaseControl : public QGroupBox
 {
   Q_OBJECT
 public:
-  explicit TimeBaseControl(QString title, HantekDataSource * device, QWidget *parent = nullptr);
+  TimeBaseControl(QWidget * parent, QString title, HantekDataSource * device);
 
 signals:
   void valueChanged(int value);
