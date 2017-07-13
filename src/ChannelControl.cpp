@@ -1,6 +1,6 @@
 #include "ChannelControl.h"
 #include "HantekDataSource.h"
-#include "ChannelScaleSpinBox.h"
+#include "ConstrainedSpinBox.h"
 
 #include "Helpers.h"
 
@@ -16,9 +16,14 @@
 ChannelControl::ChannelControl(QWidget * parent, int index, HantekDataSource * device)
   : QGroupBox(QString("CH%1").arg(index + 1), parent),
     channelIndex_(index),
-    device_(device),
-    scale_(new ChannelScaleSpinBox(nullptr, QColor(255, 255, 0)))
+    device_(device)
 {
+  QStringList voltageRanges;
+  for (int value = int(HantekDataSource::VScale_t::VS_MIN); value <= int(HantekDataSource::VScale_t::VS_MAX); ++value)
+  {
+    voltageRanges.append(HantekDataSource::vScaleToString(HantekDataSource::VScale_t(value)));
+  }
+  scale_ = new ConstrainedSpinBox(voltageRanges);
   connect(scale_, SIGNAL(valueChanged(int)), this, SLOT(onScaleValueChanged()), Qt::QueuedConnection);
   // Layout
   QGridLayout * grid = new QGridLayout(this);

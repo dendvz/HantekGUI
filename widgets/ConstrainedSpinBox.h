@@ -5,15 +5,18 @@
 
 class QColor;
 
-class ChannelScaleSpinBox : public QSpinBox
+class ConstrainedSpinBox : public QSpinBox
 {
   Q_OBJECT
 
 public:
-  explicit ChannelScaleSpinBox(QWidget * parent, QColor color);
+  explicit ConstrainedSpinBox(const QStringList & items, QWidget * parent = nullptr);
 
   int valueFromText(const QString & text) const override;
   QString textFromValue(int value) const override;
+
+private:
+  QStringList items_;
 };
 
 #endif // CHANNELSCALESPINBOX_H

@@ -4,7 +4,7 @@
 #include <QGroupBox>
 
 class HantekDataSource;
-class ChannelScaleSpinBox;
+class ConstrainedSpinBox;
 
 class ChannelControl : public QGroupBox
 {
@@ -24,7 +24,7 @@ private slots:
 private:
   int channelIndex_;
   HantekDataSource * device_;
-  ChannelScaleSpinBox * scale_;
+  ConstrainedSpinBox * scale_;
 };
 
 #endif // CHANNELCONTROL_H

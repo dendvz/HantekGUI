@@ -4,6 +4,7 @@
 #include <QGroupBox>
 
 class QLabel;
+class ConstrainedSpinBox;
 class QDial;
 class HantekDataSource;
 
@@ -20,12 +21,11 @@ public slots:
   void setTimeBase(int value);
 
 private slots:
-  void incTimeBase();
-  void decTimeBase();
+  void onSpinBoxValueChanged();
 
 private:
   HantekDataSource * device_;
-  QLabel * timeBaseLabel_;
+  ConstrainedSpinBox * timeBaseSpinBox_;
   QDial  * timeBaseDial_;
 };
 

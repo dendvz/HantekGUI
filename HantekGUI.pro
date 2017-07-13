@@ -1,6 +1,6 @@
 QT += charts
 
-INCLUDEPATH += include
+INCLUDEPATH += include widgets
 
 HEADERS += \
     include/Helpers.h \
@@ -10,7 +10,8 @@ HEADERS += \
     include/Marker.h \
     include/ScopeView.h \
     include/ChannelControl.h \
-    include/ChannelScaleSpinBox.h
+    widgets/ConstrainedSpinBox.h \
+    widgets/SpinCombo.h
 
 SOURCES += \
     src/main.cpp\
@@ -20,7 +21,8 @@ SOURCES += \
     src/Marker.cpp \
     src/ScopeView.cpp \
     src/ChannelControl.cpp \
-    src/ChannelScaleSpinBox.cpp
+    widgets/ConstrainedSpinBox.cpp \
+    widgets/SpinCombo.cpp
 
 # target.path = $$[QT_INSTALL_EXAMPLES]/charts/audio
 # INSTALLS += target
