@@ -4,9 +4,9 @@
 #include <QGroupBox>
 
 class QLabel;
-class ConstrainedSpinBox;
 class QDial;
 class HantekDataSource;
+class SpinCombo;
 
 class TimeBaseControl : public QGroupBox
 {
@@ -21,12 +21,11 @@ public slots:
   void setTimeBase(int value);
 
 private slots:
-  void onSpinBoxValueChanged();
+  void onValueChanged(int value);
 
 private:
   HantekDataSource * device_;
-  ConstrainedSpinBox * timeBaseSpinBox_;
-  QDial  * timeBaseDial_;
+  SpinCombo * timebase_;
 };
 
 #endif // TIMEBASECONTROL_H

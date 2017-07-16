@@ -1,65 +1,59 @@
 #include "TimeBaseControl.h"
 #include "HantekDataSource.h"
-#include "ConstrainedSpinBox.h"
+#include "SpinCombo.h"
 
 #include "Helpers.h"
 
-#include <QLabel>
-#include <QPushButton>
-#include <QDial>
-#include <QLineEdit>
+#include <QVBoxLayout>
 
-#include <QCommonStyle>
-#include <QGridLayout>
+namespace
+{
+QString hScaleToString(HantekDataSource::HScale_t hScale)
+{
+  qreal value = HantekDataSource::hScaleToValue(hScale);
+
+  if (value * 1e3 >= 1.0)
+  {
+    return QString("%1 ms").arg(value * 1e3);
+  }
+  else if (value * 1e6 >= 1.0)
+  {
+    return QString("%1 us").arg(value * 1e6);
+  }
+  return QString("%1 ns").arg(value * 1e9);
+}
+
+
+} // namespace
 
 TimeBaseControl::TimeBaseControl(QWidget * parent, QString title, HantekDataSource * device)
   : QGroupBox(title, parent),
     device_(device)
 {
   QStringList supportedTimeBases;
-  for (int value = int(HantekDataSource::TimeBase_t::TB_MIN); value <= int(HantekDataSource::TimeBase_t::TB_MAX); ++value)
+  for (int value = int(HantekDataSource::HScale_t::HS_MIN); value <= int(HantekDataSource::HScale_t::HS_MAX); ++value)
   {
-    supportedTimeBases.append(HantekDataSource::timeBaseToString(HantekDataSource::TimeBase_t(value)));
+    supportedTimeBases.append(hScaleToString(HantekDataSource::HScale_t(value)));
   }
-  timeBaseSpinBox_ = new ConstrainedSpinBox(supportedTimeBases);
-  connect(timeBaseSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(onSpinBoxValueChanged()), Qt::QueuedConnection);
-
-  timeBaseDial_ = new QDial;
-  timeBaseDial_->setWrapping(false);
-  timeBaseDial_->setNotchesVisible(true);
-  timeBaseDial_->setMinimum(int(HantekDataSource::TimeBase_t::TB_MIN));
-  timeBaseDial_->setMaximum(int(HantekDataSource::TimeBase_t::TB_MAX));
-  timeBaseDial_->setTracking(true);
-
-  QObject::connect(timeBaseDial_, SIGNAL(valueChanged(int)), this, SLOT(setTimeBase(int)));
+  timebase_ = new SpinCombo(supportedTimeBases, this);
+  connect(timebase_, SIGNAL(valueChanged(int)), this, SLOT(onValueChanged(int)));
 
   // Layout
-  QGridLayout * grid = new QGridLayout(this);
-  grid->setContentsMargins(QMargins());
-  grid->addWidget(timeBaseSpinBox_, 0, 0, 1, 2, Qt::AlignHCenter | Qt::AlignBottom);
-  grid->addWidget(timeBaseDial_, 2, 0, 1, 2);
-  grid->setRowStretch(2, 1);
-  grid->setRowMinimumHeight(0, 32);
-
-  setLayout(grid);
+  QVBoxLayout * layout = new QVBoxLayout(this);
+  layout->setContentsMargins(QMargins());
+  layout->addWidget(timebase_);
+  setLayout(layout);
 }
 
-void TimeBaseControl::onSpinBoxValueChanged()
+void TimeBaseControl::onValueChanged(int value)
 {
-  timeBaseSpinBox_->findChild<QLineEdit *>()->deselect();
-
-  int value = timeBaseSpinBox_->value();
-  timeBaseDial_->setValue(value);
-  device_->setTimeBase(HantekDataSource::TimeBase_t(value));
-
+  TRACE("value=%d", value);
+  device_->setHScale(HantekDataSource::HScale_t(value));
   emit valueChanged(value);
 }
 
 void TimeBaseControl::setTimeBase(int value)
 {
-  timeBaseDial_->setValue(value);
-  timeBaseSpinBox_->setValue(value);
-  device_->setTimeBase(HantekDataSource::TimeBase_t(value));
-
-  emit valueChanged(value);
+  timebase_->set(value);
+  device_->setHScale(HantekDataSource::HScale_t(value));
 }

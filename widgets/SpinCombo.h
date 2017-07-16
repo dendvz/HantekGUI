@@ -3,14 +3,14 @@
 
 #include <QWidget>
 
-class QSpinBox;
+class ConstrainedSpinBox;
 class QDial;
 
 class SpinCombo : public QWidget
 {
   Q_OBJECT
 public:
-  SpinCombo(QWidget * parent, const QStringList & items);
+  explicit SpinCombo(const QStringList & items, QWidget * parent = nullptr);
 
 signals:
   void valueChanged(int value);
@@ -18,9 +18,13 @@ signals:
 public slots:
   void set(int value);
 
+private slots:
+  void onDialValueChanged(int value);
+  void onSpinBoxValueChanged(int value);
+
 private:
-  const QStringList & items_;
-  QSpinBox * spinBox_;
+  QStringList items_;
+  ConstrainedSpinBox * spinBox_;
   QDial * dial_;
 };
 

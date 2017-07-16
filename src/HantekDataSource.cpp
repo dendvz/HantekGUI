@@ -14,7 +14,7 @@
 HantekDataSource::HantekDataSource(Series series, QObject * parent)
   : QObject(parent),
     series_(series),
-    timeBase_(TimeBase_t::TB_MIN),
+    hScale_(HScale_t::HS_MIN),
     triggerMode_(TriggerMode_t::AUTO)
 {
   vScale_.reserve(getChannelCount());
@@ -33,7 +33,7 @@ void HantekDataSource::Acquire()
   qreal calibratorPeriod = 1e-3; // 1kHz
 
   // samples, assuming 10 divs along X axis
-  int period = int(floor(calibratorPeriod * range / (10 * timeBaseToValue(timeBase_))));
+  int period = int(floor(calibratorPeriod * range / (10 * hScaleToValue(hScale_))));
 
   for (int trace = 0; trace < 2; ++trace)
   {
@@ -72,59 +72,27 @@ H_SCALE = [
 ]
   */
 
-qreal HantekDataSource::timeBaseToValue(TimeBase_t timeBase)
+qreal HantekDataSource::hScaleToValue(HScale_t hScale)
 {
-  switch (timeBase)
+  switch (hScale)
   {
-  case TimeBase_t::TB_100ns: return 100e-9;
-  case TimeBase_t::TB_200ns: return 200e-9;
-  case TimeBase_t::TB_500ns: return 500e-9;
-  case TimeBase_t::TB_1us:   return   1e-6;
-  case TimeBase_t::TB_2us:   return   2e-6;
-  case TimeBase_t::TB_5us:   return   5e-6;
-  case TimeBase_t::TB_10us:  return  10e-6;
-  case TimeBase_t::TB_20us:  return  20e-6;
-  case TimeBase_t::TB_50us:  return  50e-6;
-  case TimeBase_t::TB_100us: return 100e-6;
-  case TimeBase_t::TB_200us: return 200e-6;
-  case TimeBase_t::TB_500us: return 500e-6;
-  case TimeBase_t::TB_1ms:   return   1e-3;
-  case TimeBase_t::TB_2ms:   return   2e-3;
-  case TimeBase_t::TB_5ms:   return   5e-3;
+  case HScale_t::HS_100ns: return 100e-9;
+  case HScale_t::HS_200ns: return 200e-9;
+  case HScale_t::HS_500ns: return 500e-9;
+  case HScale_t::HS_1us:   return   1e-6;
+  case HScale_t::HS_2us:   return   2e-6;
+  case HScale_t::HS_5us:   return   5e-6;
+  case HScale_t::HS_10us:  return  10e-6;
+  case HScale_t::HS_20us:  return  20e-6;
+  case HScale_t::HS_50us:  return  50e-6;
+  case HScale_t::HS_100us: return 100e-6;
+  case HScale_t::HS_200us: return 200e-6;
+  case HScale_t::HS_500us: return 500e-6;
+  case HScale_t::HS_1ms:   return   1e-3;
+  case HScale_t::HS_2ms:   return   2e-3;
+  case HScale_t::HS_5ms:   return   5e-3;
   }
   return 0.0;
-}
-
-QString HantekDataSource::timeBaseToString(TimeBase_t timeBase)
-{
-  QString result;
-  qreal value = timeBaseToValue(timeBase);
-
-  switch (timeBase)
-  {
-  case TimeBase_t::TB_100ns:
-  case TimeBase_t::TB_200ns:
-  case TimeBase_t::TB_500ns:
-    QTextStream(&result) << (value * 1e9) << " ns";
-    break;
-  case TimeBase_t::TB_1us:
-  case TimeBase_t::TB_2us:
-  case TimeBase_t::TB_5us:
-  case TimeBase_t::TB_10us:
-  case TimeBase_t::TB_20us:
-  case TimeBase_t::TB_50us:
-  case TimeBase_t::TB_100us:
-  case TimeBase_t::TB_200us:
-  case TimeBase_t::TB_500us:
-    QTextStream(&result) << (value * 1e6) << " us";
-    break;
-  case TimeBase_t::TB_1ms:
-  case TimeBase_t::TB_2ms:
-  case TimeBase_t::TB_5ms:
-    QTextStream(&result) << (value * 1e3) << " ms";
-    break;
-  }
-  return result;
 }
 
 qreal HantekDataSource::vScaleToValue(VScale_t vScale)
@@ -139,22 +107,4 @@ qreal HantekDataSource::vScaleToValue(VScale_t vScale)
   case VScale_t::VS_5V:     return 5.0;
   }
   return 0.0;
-}
-
-QString HantekDataSource::vScaleToString(VScale_t vScale)
-{
-  qreal value = vScaleToValue(vScale);
-
-  switch (vScale)
-  {
-  case VScale_t::VS_100mV:
-  case VScale_t::VS_200mV:
-  case VScale_t::VS_500mV:
-    return QString("%1mV").arg(value * 1000);
-  case VScale_t::VS_1V:
-  case VScale_t::VS_2V:
-  case VScale_t::VS_5V:
-    return QString("%1V").arg(value);
-  }
-  return QString();
 }

@@ -23,23 +23,23 @@ class HantekDataSource : public QObject
 public:
   using Series = std::vector<QLineSeries *>;
 
-  enum class TimeBase_t
+  enum class HScale_t
   {
-    TB_5ms,   TB_MIN = TimeBase_t::TB_5ms,
-    TB_2ms,
-    TB_1ms,
-    TB_500us,
-    TB_200us,
-    TB_100us,
-    TB_50us,
-    TB_20us,
-    TB_10us,
-    TB_5us,
-    TB_2us,
-    TB_1us,
-    TB_500ns,
-    TB_200ns,
-    TB_100ns, TB_MAX = TimeBase_t::TB_100ns
+    HS_5ms,   HS_MIN = HScale_t::HS_5ms,
+    HS_2ms,
+    HS_1ms,
+    HS_500us,
+    HS_200us,
+    HS_100us,
+    HS_50us,
+    HS_20us,
+    HS_10us,
+    HS_5us,
+    HS_2us,
+    HS_1us,
+    HS_500ns,
+    HS_200ns,
+    HS_100ns, HS_MAX = HScale_t::HS_100ns
   };
 
   enum class TriggerMode_t
@@ -78,20 +78,17 @@ public:
 
   void setTriggerMode(TriggerMode_t mode) { triggerMode_ = mode; }
 
-  static qreal   timeBaseToValue(TimeBase_t timeBase);
-  static QString timeBaseToString(TimeBase_t timeBase);
-
-  static qreal   vScaleToValue(VScale_t vScale);
-  static QString vScaleToString(VScale_t vScale);
+  static qreal hScaleToValue(HScale_t hScale);
+  static qreal vScaleToValue(VScale_t vScale);
 
   void Acquire();
-  void setTimeBase(TimeBase_t timeBase)         { timeBase_ = timeBase; }
+  void setHScale(HScale_t hScale)               { hScale_ = hScale; }
   void setVScale(int channel, VScale_t vScale)  { vScale_[channel] = vScale; }
 
 private:
   Series series_;
 
-  TimeBase_t    timeBase_;
+  HScale_t    hScale_;
   TriggerMode_t triggerMode_;
   std::vector<VScale_t> vScale_;
 };

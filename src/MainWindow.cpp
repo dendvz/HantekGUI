@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
   timeBaseControl_ = new TimeBaseControl(this, tr("Timebase"), device_);
 
   // TODO: Load from settings
-  timeBaseControl_->setTimeBase(int(HantekDataSource::TimeBase_t::TB_200us));
+  timeBaseControl_->setTimeBase(int(HantekDataSource::HScale_t::HS_200us));
 
   controlPanelLayout->addWidget(timeBaseControl_, 1, Qt::AlignTop);
   controlPanelLayout->addWidget(createTriggerControl());

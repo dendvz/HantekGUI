@@ -34,8 +34,8 @@ Marker::Marker(QChart * chart, QString text, QColor color, Qt::ArrowType directi
     boundingRect_ = m_textRect.adjusted(-TIP_LENGTH, 0, 2, 0);
     break;
   case Qt::RightArrow:
-    m_textRect.translate(- m_textRect.width() - 2 * TIP_LENGTH, 5);
-    boundingRect_ = m_textRect.adjusted(-TIP_LENGTH, 0, 2, 0);
+    m_textRect.translate(- m_textRect.width() - 2 * TIP_LENGTH - 5, 5);
+    boundingRect_ = m_textRect.adjusted(-2, 0, 5, 0);
     break;
   default:
     boundingRect_ = m_textRect;

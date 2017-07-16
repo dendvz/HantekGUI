@@ -9,10 +9,8 @@ ConstrainedSpinBox::ConstrainedSpinBox(const QStringList & items, QWidget * pare
 {
   setRange(0, items_.size() - 1);
   setAlignment(Qt::AlignRight);
-  setMinimumWidth(120);
-  setMinimumHeight(40);
   setWrapping(false);
-  setFont(QFont("Courier", 16, QFont::Bold));
+  setFont(QFont("Courier", 14, QFont::Bold));
 
   setStyleSheet(
     "QSpinBox { border: 0px; padding: 5px; }\

@@ -100,5 +100,5 @@ void ScopeView::mouseMoveEvent(QMouseEvent *event)
 
 void ScopeView::markerPosChanged()
 {
-  TRACE("%s", "WTF?");
+  TRACE("%s", "?");
 }
