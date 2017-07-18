@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
   timeBaseControl_ = new TimeBaseControl(this, tr("Timebase"), device_);
 
   // TODO: Load from settings
-  timeBaseControl_->setTimeBase(int(HantekDataSource::HScale_t::HS_200us));
+  timeBaseControl_->set(int(HantekDataSource::HScale_t::HS_200us));
 
   controlPanelLayout->addWidget(timeBaseControl_, 1, Qt::AlignTop);
   controlPanelLayout->addWidget(createTriggerControl());
@@ -64,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
   {
     ChannelControl * ch = new ChannelControl(this, trace, device_);
     // TODO: Load from settings
-    ch->setScale(int(HantekDataSource::VScale_t::VS_500mV));
+    ch->set(int(HantekDataSource::VScale_t::VS_1V));
     controlPanelLayout->addWidget(ch);
     channelControl_.push_back(ch);
   }

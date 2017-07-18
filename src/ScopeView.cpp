@@ -40,8 +40,8 @@ ScopeView::ScopeView(QWidget *parent)
 
   chart_->addAxis(new CustomAxis(0, 2000, 10), Qt::AlignBottom);
   chart_->addAxis(new CustomAxis(0, 2000, 10), Qt::AlignTop);
-  chart_->addAxis(new CustomAxis(-1, 1, 8),    Qt::AlignLeft);
-  chart_->addAxis(new CustomAxis(-1, 1, 8),    Qt::AlignRight);
+  chart_->addAxis(new CustomAxis(-4, 4, 8),    Qt::AlignLeft);
+  chart_->addAxis(new CustomAxis(-4, 4, 8),    Qt::AlignRight);
 
   chart_->setAcceptHoverEvents(true);
 
@@ -70,7 +70,7 @@ ScopeView::ScopeView(QWidget *parent)
     markers_.append(marker);
 
     marker->setData(1, trace);
-    marker->setPosition(0.5 - trace);
+    marker->setPosition(1.0 - 4.0 * trace);
     connect(marker, SIGNAL(yChanged()), this, SLOT(markerPosChanged()));
 
 //    connect(traces_[trace], SIGNAL(clicked(QPointF)), this, SLOT(keepMarker()));

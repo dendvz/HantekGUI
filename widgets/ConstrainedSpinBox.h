@@ -10,7 +10,7 @@ class ConstrainedSpinBox : public QSpinBox
   Q_OBJECT
 
 public:
-  explicit ConstrainedSpinBox(const QStringList & items, QWidget * parent = nullptr);
+  ConstrainedSpinBox(QWidget * parent, const QStringList & items);
 
   int valueFromText(const QString & text) const override;
   QString textFromValue(int value) const override;

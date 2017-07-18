@@ -23,7 +23,7 @@ class HantekDataSource : public QObject
 public:
   using Series = std::vector<QLineSeries *>;
 
-  enum class HScale_t
+  enum class HScale_t : int
   {
     HS_5ms,   HS_MIN = HScale_t::HS_5ms,
     HS_2ms,
@@ -50,18 +50,10 @@ public:
     SOFTWARE
   };
 
-/*
-   VOLTAGE_RANGES = {0x01: ('+/- 5V', 0.0390625, 2.5),
-                      0x02: ('+/- 2.5V', 0.01953125, 1.25),
-                      0x05: ('+/- 1V', 0.0078125, 0.5),
-                      0x0a: ('+/- 500mV', 0.00390625, 0.25)}
-
- */
-
   /*
   ** Volts / div
   */
-  enum class VScale_t
+  enum class VScale_t : int
   {
     VS_5V,    VS_MIN = VScale_t::VS_5V,
     VS_2V,

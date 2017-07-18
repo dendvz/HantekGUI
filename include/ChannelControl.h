@@ -5,26 +5,26 @@
 
 class HantekDataSource;
 class SpinCombo;
+class QCheckBox;
 
 class ChannelControl : public QGroupBox
 {
   Q_OBJECT
 public:
   ChannelControl(QWidget * parent, int index, HantekDataSource * device);
+  void set(int value);
 
 signals:
   void valueChanged(int value);
 
-public slots:
-  void setScale(int value);
-
 private slots:
-  void onScaleValueChanged();
+  void onValueChanged(int value);
 
 private:
   int channelIndex_;
   HantekDataSource * device_;
   SpinCombo * voltage_;
+  QCheckBox * probe_;
 };
 
 #endif // CHANNELCONTROL_H

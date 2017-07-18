@@ -11,6 +11,45 @@
 
 #include <QTextStream>
 
+namespace
+{
+
+struct VMap_t
+{
+  unsigned char deviceMode;
+  qreal         scaleFactor;
+
+  VMap_t(unsigned char mode, qreal factor)
+    : deviceMode(mode),
+      scaleFactor(factor)
+  {}
+};
+
+VMap_t vMap(HantekDataSource::VScale_t vScale)
+{
+  const qreal vMax = 127.0;
+  switch (vScale)
+  {
+  case HantekDataSource::VScale_t::VS_100mV:  return VMap_t(0x0a, 0.5 / (0.1 * vMax));
+  case HantekDataSource::VScale_t::VS_200mV:  return VMap_t(0x0a, 0.5 / (0.2 * vMax));
+  case HantekDataSource::VScale_t::VS_500mV:  return VMap_t(0x05, 1.0 / (0.5 * vMax));
+  case HantekDataSource::VScale_t::VS_1V:     return VMap_t(0x02, 2.5 / (1.0 * vMax));
+  case HantekDataSource::VScale_t::VS_2V:     return VMap_t(0x01, 5.0 / (2.0 * vMax));
+  case HantekDataSource::VScale_t::VS_5V:     return VMap_t(0x01, 5.0 / (5.0 * vMax));
+  }
+}
+
+/*
+   VOLTAGE_RANGES = {0x01: ('+/- 5V', 0.0390625, 2.5),
+                      0x02: ('+/- 2.5V', 0.01953125, 1.25),
+                      0x05: ('+/- 1V', 0.0078125, 0.5),
+                      0x0a: ('+/- 500mV', 0.00390625, 0.25)}
+
+ */
+
+
+} // namespace
+
 HantekDataSource::HantekDataSource(Series series, QObject * parent)
   : QObject(parent),
     series_(series),
@@ -28,9 +67,10 @@ void HantekDataSource::Acquire()
 {
   int range = 2000;
 
-  qreal bias[] = {0.5, -0.5};
+  qreal bias[] = {1.0, -3.0};
 
   qreal calibratorPeriod = 1e-3; // 1kHz
+  qreal calibratorVoltage = 2.0; // 2V
 
   // samples, assuming 10 divs along X axis
   int period = int(floor(calibratorPeriod * range / (10 * hScaleToValue(hScale_))));
@@ -42,8 +82,8 @@ void HantekDataSource::Acquire()
     for (int i = 0; i < range; ++i)
     {
       qreal v = bias[trace]
-              + (0.4 * ((2 * i / period) % 2))
-              + (0.05 * (rand() / qreal(RAND_MAX) - 0.5));
+              + (calibratorVoltage / vScaleToValue(vScale_[trace])) * ((2 * i / period) % 2)
+              + (0.1 * (rand() / qreal(RAND_MAX) - 0.5));
       points.append(QPointF(i, v));
     }
 

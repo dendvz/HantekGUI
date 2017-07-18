@@ -3,7 +3,7 @@
 
 #include <QLineEdit>
 
-ConstrainedSpinBox::ConstrainedSpinBox(const QStringList & items, QWidget * parent)
+ConstrainedSpinBox::ConstrainedSpinBox(QWidget * parent, const QStringList & items)
   : QSpinBox(parent),
     items_(items)
 {
@@ -18,7 +18,9 @@ ConstrainedSpinBox::ConstrainedSpinBox(const QStringList & items, QWidget * pare
      QSpinBox::down-button { subcontrol-position: bottom right; width: 40px; height: 19px; }"
   );
 
-  findChild<QLineEdit *>()->setReadOnly(true);
+  QLineEdit * edit = findChild<QLineEdit *>();
+  edit->setReadOnly(true);
+  edit->setStyleSheet("QLineEdit { selection-color: black; selection-background-color: white; }");
 }
 
 int ConstrainedSpinBox::valueFromText(const QString & text) const

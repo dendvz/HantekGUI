@@ -23,7 +23,6 @@ QString hScaleToString(HantekDataSource::HScale_t hScale)
   return QString("%1 ns").arg(value * 1e9);
 }
 
-
 } // namespace
 
 TimeBaseControl::TimeBaseControl(QWidget * parent, QString title, HantekDataSource * device)
@@ -35,7 +34,7 @@ TimeBaseControl::TimeBaseControl(QWidget * parent, QString title, HantekDataSour
   {
     supportedTimeBases.append(hScaleToString(HantekDataSource::HScale_t(value)));
   }
-  timebase_ = new SpinCombo(supportedTimeBases, this);
+  timebase_ = new SpinCombo(this, supportedTimeBases);
   connect(timebase_, SIGNAL(valueChanged(int)), this, SLOT(onValueChanged(int)));
 
   // Layout
@@ -47,12 +46,11 @@ TimeBaseControl::TimeBaseControl(QWidget * parent, QString title, HantekDataSour
 
 void TimeBaseControl::onValueChanged(int value)
 {
-  TRACE("value=%d", value);
   device_->setHScale(HantekDataSource::HScale_t(value));
   emit valueChanged(value);
 }
 
-void TimeBaseControl::setTimeBase(int value)
+void TimeBaseControl::set(int value)
 {
   timebase_->set(value);
   device_->setHScale(HantekDataSource::HScale_t(value));

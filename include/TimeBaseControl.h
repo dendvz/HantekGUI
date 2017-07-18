@@ -13,12 +13,10 @@ class TimeBaseControl : public QGroupBox
   Q_OBJECT
 public:
   TimeBaseControl(QWidget * parent, QString title, HantekDataSource * device);
+  void set(int value);
 
 signals:
   void valueChanged(int value);
-
-public slots:
-  void setTimeBase(int value);
 
 private slots:
   void onValueChanged(int value);

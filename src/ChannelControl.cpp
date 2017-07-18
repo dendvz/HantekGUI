@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QDial>
 #include <QSpinBox>
+#include <QCheckBox>
 #include <QLineEdit>
 
 #include <QCommonStyle>
@@ -46,9 +47,9 @@ ChannelControl::ChannelControl(QWidget * parent, int index, HantekDataSource * d
   {
     voltageRanges.append(vScaleToString(HantekDataSource::VScale_t(value)));
   }
-  voltage_ = new SpinCombo(voltageRanges, this);
-
+  voltage_ = new SpinCombo(this, voltageRanges);
   voltage_->findChild<QDial *>()->setMaximumHeight(80);
+  connect(voltage_, SIGNAL(valueChanged(int)), this, SLOT(onValueChanged(int)));
 
   // TODO: Load from settings
   QColor color;
@@ -63,28 +64,26 @@ ChannelControl::ChannelControl(QWidget * parent, int index, HantekDataSource * d
 
   setStyleSheet(QString("QGroupBox::title { background-color: rgb(%1, %2, %3); }").arg(color.red()).arg(color.green()).arg(color.blue()));
 
+  probe_ = new QCheckBox(this);
+
   // Layout
   QGridLayout * grid = new QGridLayout(this);
   grid->setContentsMargins(QMargins());
   grid->addWidget(voltage_, 0, 0, 1, 2);
+  grid->addWidget(probe_, 1, 0, 1, 2);
   grid->setRowStretch(0, 1);
 
   setLayout(grid);
 }
 
-void ChannelControl::onScaleValueChanged()
+void ChannelControl::onValueChanged(int value)
 {
+  TRACE("value=%d", value);
+  device_->setVScale(channelIndex_, HantekDataSource::VScale_t(value));
 }
 
-void ChannelControl::setScale(int value)
+void ChannelControl::set(int value)
 {
-  /*
-  HantekDataSource::VScale_t vs = HantekDataSource::VScale_t(value);
-
-  scaleDial_->setValue(value);
-  scaleLabel_->setText(HantekDataSource::vScaleToString(vs));
-  device_->setVScale(channelIndex_, vs);
-
-  emit valueChanged(value);
-  */
+  voltage_->set(value);
+  device_->setHScale(HantekDataSource::HScale_t(value));
 }

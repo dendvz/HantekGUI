@@ -5,12 +5,11 @@
 
 #include <QDial>
 #include <QVBoxLayout>
-#include <QLineEdit>
 
-SpinCombo::SpinCombo(const QStringList & items, QWidget * parent)
+SpinCombo::SpinCombo(QWidget * parent, const QStringList & items)
   : QWidget(parent),
     items_(items),
-    spinBox_(new ConstrainedSpinBox(items, parent)),
+    spinBox_(new ConstrainedSpinBox(parent, items)),
     dial_(new QDial)
 {
   dial_->setWrapping(false);
@@ -19,7 +18,7 @@ SpinCombo::SpinCombo(const QStringList & items, QWidget * parent)
   dial_->setRange(0, items.size() - 1);
 
   QObject::connect(dial_, SIGNAL(valueChanged(int)), this, SLOT(onDialValueChanged(int)));
-  QObject::connect(spinBox_, SIGNAL(valueChanged(int)), this, SLOT(onSpinBoxValueChanged(int)), Qt::QueuedConnection);
+  QObject::connect(spinBox_, SIGNAL(valueChanged(int)), this, SLOT(onSpinBoxValueChanged(int)));
 
   QVBoxLayout * layout = new QVBoxLayout(this);
   layout->addWidget(spinBox_);
@@ -34,13 +33,19 @@ void SpinCombo::set(int value)
 
 void SpinCombo::onDialValueChanged(int value)
 {
-  spinBox_->setValue(value);
-  emit valueChanged(value);
+  if (spinBox_->value() != value)
+  {
+    spinBox_->setValue(value);
+    emit valueChanged(value);
+  }
 }
 
 void SpinCombo::onSpinBoxValueChanged(int value)
 {
-  spinBox_->findChild<QLineEdit *>()->deselect();
-  dial_->setValue(value);
+  if (dial_->value() != value)
+  {
+    dial_->setValue(value);
+    emit valueChanged(value);
+  }
 }
 

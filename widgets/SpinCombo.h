@@ -10,7 +10,7 @@ class SpinCombo : public QWidget
 {
   Q_OBJECT
 public:
-  explicit SpinCombo(const QStringList & items, QWidget * parent = nullptr);
+  SpinCombo(QWidget * parent, const QStringList & items);
 
 signals:
   void valueChanged(int value);
