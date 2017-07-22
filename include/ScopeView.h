@@ -14,6 +14,8 @@ class QMouseEvent;
 class QResizeEvent;
 class Marker;
 
+class HantekDataSource;
+
 QT_CHARTS_USE_NAMESPACE
 
 class ScopeView: public QGraphicsView
@@ -21,9 +23,9 @@ class ScopeView: public QGraphicsView
   Q_OBJECT
 
 public:
-  ScopeView(QWidget *parent = 0);
+  ScopeView(QWidget * parent, HantekDataSource * device);
 
-  std::vector<QLineSeries *> getTraces() const { return traces_; }
+//  std::vector<QLineSeries *> getTraces() const { return traces_; }
 
 protected:
   void resizeEvent(QResizeEvent * event);
@@ -33,11 +35,10 @@ public slots:
   void markerPosChanged();
 
 private:
-  std::vector<QLineSeries *> traces_;
-
-  QChart * chart_;
-
-  QList<Marker *> markers_;
+  HantekDataSource *          device_;
+  std::vector<QLineSeries *>  traces_;
+  QChart *                    chart_;
+  QList<Marker *>             markers_;
 };
 
 #endif // SCOPEVIEW_H

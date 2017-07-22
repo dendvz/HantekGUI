@@ -21,6 +21,7 @@ SpinCombo::SpinCombo(QWidget * parent, const QStringList & items)
   QObject::connect(spinBox_, SIGNAL(valueChanged(int)), this, SLOT(onSpinBoxValueChanged(int)));
 
   QVBoxLayout * layout = new QVBoxLayout(this);
+  layout->setContentsMargins(QMargins(3, 3, 3, 3));
   layout->addWidget(spinBox_);
   layout->addWidget(dial_);
   setLayout(layout);

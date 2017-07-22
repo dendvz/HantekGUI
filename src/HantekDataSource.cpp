@@ -10,6 +10,7 @@
 #include <cstdlib>
 
 #include <QTextStream>
+#include <QSettings>
 
 namespace
 {
@@ -47,20 +48,51 @@ VMap_t vMap(HantekDataSource::VScale_t vScale)
 
  */
 
+void generateDefaultSettings(QSettings * settings)
+{
+  settings->setValue("device", "Hantek6022BE");
+  for (int i = 0; i < 2; ++i)
+  {
+    settings->beginGroup(QString("CH%1").arg(i + 1));
+    if (i == 0)
+    {
+      settings->setValue("color", colorToRgb(QColor(255, 255, 0)));
+    }
+    else
+    {
+      settings->setValue("color", colorToRgb(QColor(0, 255, 255)));
+    }
+    settings->endGroup();
+  }
+}
 
 } // namespace
 
-HantekDataSource::HantekDataSource(Series series, QObject * parent)
+HantekDataSource::HantekDataSource(QObject * parent)
   : QObject(parent),
-    series_(series),
     hScale_(HScale_t::HS_MIN),
     triggerMode_(TriggerMode_t::AUTO)
 {
-  vScale_.reserve(getChannelCount());
+  settings_ = new QSettings(APPLICATION_NAME);
+  if (settings_->allKeys().empty())
+  {
+    generateDefaultSettings(settings_);
+  }
+
+  for (int ch = 0; ch < getChannelCount(); ++ch)
+  {
+    vScale_.push_back(VScale_t::VS_MIN);
+    series_.push_back(nullptr);
+  }
 }
 
 HantekDataSource::~HantekDataSource()
 {
+}
+
+QVariant HantekDataSource::getConfig(QString item)
+{
+  return settings_->value(item);
 }
 
 void HantekDataSource::Acquire()
@@ -87,7 +119,10 @@ void HantekDataSource::Acquire()
       points.append(QPointF(i, v));
     }
 
-    series_[trace]->replace(points);
+    if (series_[trace])
+    {
+      series_[trace]->replace(points);
+    }
   }
 }
 

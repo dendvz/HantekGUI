@@ -2,6 +2,8 @@
 #include "Marker.h"
 #include "Helpers.h"
 
+#include "HantekDataSource.h"
+
 #include <QtGui/QResizeEvent>
 #include <QGraphicsScene>
 #include <QLineSeries>
@@ -25,8 +27,9 @@ public:
   }
 };
 
-ScopeView::ScopeView(QWidget *parent)
+ScopeView::ScopeView(QWidget * parent, HantekDataSource * device)
   : QGraphicsView(new QGraphicsScene, parent),
+    device_(device),
     chart_(new QChart)
 {
   setDragMode(QGraphicsView::NoDrag);
@@ -48,25 +51,19 @@ ScopeView::ScopeView(QWidget *parent)
   setRenderHint(QPainter::Antialiasing);
   scene()->addItem(chart_);
 
-  for (int trace = 0; trace < 2; ++trace)
+  for (int trace = 0; trace < device->getChannelCount(); ++trace)
   {
+    QString name = QString("CH%1").arg(trace + 1);
+    QColor color = rgbToColor(device_->getConfig(name + "/color").toString());
+
     traces_.push_back(new QLineSeries);
-    // TODO: Load from settings
-    QColor color;
-    if (trace == 0)
-    {
-      color = QColor(255, 255, 0);
-    }
-    else
-    {
-      color = QColor(0, 255, 255);
-    }
     traces_[trace]->setPen(color);
     chart_->addSeries(traces_[trace]);
+    device_->setTrace(trace, traces_[trace]);
     traces_[trace]->attachAxis(chart_->axisX());
     traces_[trace]->attachAxis(chart_->axisY());
 
-    Marker * marker = new Marker(chart_, QString("CH%1").arg(trace + 1), color, Qt::RightArrow);
+    Marker * marker = new Marker(chart_, name, color, Qt::RightArrow);
     markers_.append(marker);
 
     marker->setData(1, trace);

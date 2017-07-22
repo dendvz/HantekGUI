@@ -11,11 +11,12 @@ ConstrainedSpinBox::ConstrainedSpinBox(QWidget * parent, const QStringList & ite
   setAlignment(Qt::AlignRight);
   setWrapping(false);
   setFont(QFont("Courier", 14, QFont::Bold));
+  setMaximumHeight(30);
 
   setStyleSheet(
-    "QSpinBox { border: 0px; padding: 5px; }\
-     QSpinBox::up-button   { subcontrol-position: top right;    width: 40px; height: 19px; }\
-     QSpinBox::down-button { subcontrol-position: bottom right; width: 40px; height: 19px; }"
+    "QSpinBox { border: 0px; padding: 5px 0px 5px 0px; }\
+     QSpinBox::up-button   { subcontrol-position: top right;    width: 28px; height: 15px; }\
+     QSpinBox::down-button { subcontrol-position: bottom right; width: 28px; height: 15px; }"
   );
 
   QLineEdit * edit = findChild<QLineEdit *>();

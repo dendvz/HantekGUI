@@ -7,6 +7,8 @@
 
 #include <QObject>
 #include <QChartGlobal>
+#include <QVariant>
+#include <QString>
 
 #include <vector>
 
@@ -16,13 +18,13 @@ QT_CHARTS_END_NAMESPACE
 
 QT_CHARTS_USE_NAMESPACE
 
+class QSettings;
+
 class HantekDataSource : public QObject
 {
   Q_OBJECT
 
 public:
-  using Series = std::vector<QLineSeries *>;
-
   enum class HScale_t : int
   {
     HS_5ms,   HS_MIN = HScale_t::HS_5ms,
@@ -42,17 +44,6 @@ public:
     HS_100ns, HS_MAX = HScale_t::HS_100ns
   };
 
-  enum class TriggerMode_t
-  {
-    AUTO,
-    NORMAL,
-    SINGLE,
-    SOFTWARE
-  };
-
-  /*
-  ** Volts / div
-  */
   enum class VScale_t : int
   {
     VS_5V,    VS_MIN = VScale_t::VS_5V,
@@ -63,10 +54,20 @@ public:
     VS_100mV, VS_MAX = VScale_t::VS_100mV
   };
 
-  explicit HantekDataSource(Series series, QObject * parent = nullptr);
+  enum class TriggerMode_t
+  {
+    AUTO,
+    NORMAL,
+    SINGLE,
+    SOFTWARE
+  };
+
+  explicit HantekDataSource(QObject * parent = nullptr);
   ~HantekDataSource();
 
   int getChannelCount() const { return 2; }
+
+  QVariant getConfig(QString item);
 
   void setTriggerMode(TriggerMode_t mode) { triggerMode_ = mode; }
 
@@ -74,15 +75,16 @@ public:
   static qreal vScaleToValue(VScale_t vScale);
 
   void Acquire();
-  void setHScale(HScale_t hScale)               { hScale_ = hScale; }
-  void setVScale(int channel, VScale_t vScale)  { vScale_[channel] = vScale; }
+  void setTrace(int channel, QLineSeries * trace) { series_[channel] = trace; }
+  void setHScale(HScale_t hScale)                 { hScale_ = hScale; }
+  void setVScale(int channel, VScale_t vScale)    { vScale_[channel] = vScale; }
 
 private:
-  Series series_;
-
-  HScale_t    hScale_;
-  TriggerMode_t triggerMode_;
-  std::vector<VScale_t> vScale_;
+  QSettings *                 settings_;
+  std::vector<QLineSeries *>  series_;
+  std::vector<VScale_t>       vScale_;
+  HScale_t                    hScale_;
+  TriggerMode_t               triggerMode_;
 };
 
 #endif // HANTEK_DATA_SOURCE_H

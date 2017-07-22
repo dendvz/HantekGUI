@@ -15,6 +15,7 @@ HEADERS += \
 
 SOURCES += \
     src/main.cpp\
+    src/Helpers.cpp \
     src/MainWindow.cpp \
     src/HantekDataSource.cpp \
     src/TimeBaseControl.cpp \

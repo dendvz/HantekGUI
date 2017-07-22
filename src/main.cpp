@@ -4,7 +4,6 @@
 
 #include <QApplication>
 #include "MainWindow.h"
-#include "ScopeView.h"
 
 int main(int argc, char *argv[])
 {

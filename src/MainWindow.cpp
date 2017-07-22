@@ -10,6 +10,8 @@
 #include "ChannelControl.h"
 #include "ScopeView.h"
 
+#include <QSettings>
+
 #include <QLineSeries>
 
 #include <QHBoxLayout>
@@ -29,10 +31,10 @@ MainWindow::MainWindow(QWidget *parent)
   : QWidget(parent),
     device_(nullptr)
 {
-  ScopeView* chartView = new ScopeView;
-  chartView->setMinimumSize(800, 600);
+  device_ = new HantekDataSource(this);
 
-  device_ = new HantekDataSource(chartView->getTraces(), this);
+  ScopeView* chartView = new ScopeView(this, device_);
+  chartView->setMinimumSize(800, 600);
 
   QTimer * timer = new QTimer(this);
   QObject::connect(timer, SIGNAL(timeout()), this, SLOT(doAcquire()));

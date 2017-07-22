@@ -5,7 +5,7 @@
 
 class HantekDataSource;
 class SpinCombo;
-class QCheckBox;
+class QComboBox;
 
 class ChannelControl : public QGroupBox
 {
@@ -24,7 +24,8 @@ private:
   int channelIndex_;
   HantekDataSource * device_;
   SpinCombo * voltage_;
-  QCheckBox * probe_;
+  QComboBox * probe_;
+  QComboBox * input_;
 };
 
 #endif // CHANNELCONTROL_H

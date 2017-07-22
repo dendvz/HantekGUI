@@ -5,7 +5,6 @@
 #ifndef SCOPE_VIEW_H
 #define SCOPE_VIEW_H
 
-// #include <QChartGlobal>
 #include <QWidget>
 
 class HantekDataSource;
@@ -18,7 +17,7 @@ class MainWindow : public QWidget
   Q_OBJECT
 
 public:
-  MainWindow(QWidget *parent = 0);
+  MainWindow(QWidget * parent = 0);
   ~MainWindow();
 
 public slots:
